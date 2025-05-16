@@ -22,31 +22,32 @@ import model.User;
 public class RankFrm extends javax.swing.JFrame {
     private final DefaultTableModel tableModel;
     private List<User> listUserStatics;
-    private final List<String> rankSrc;
 
     /**
      * Creates new form RankFrm
      */
     public RankFrm() {
         initComponents();
-        this.setTitle("Caro Game Nhóm 5");
+        this.setTitle("Trò chơi trí nhớ nhóm 2");
         tableModel = (DefaultTableModel) rankTextArea.getModel();
         this.setIconImage(new ImageIcon("assets/image/caroicon.png").getImage());
         this.setResizable(false);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(null);
-        rankSrc = new ArrayList<>();
-        rankSrc.add("rank-gold");
-        rankSrc.add("rank-sliver");
-        rankSrc.add("bronze-rank");
-        for (int i = 0; i < 5; i++) {
-            rankSrc.add("nomal-rank");
-        }
+        
         try {
             Client.socketHandle.write("get-rank-charts,");
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(rootPane, ex.getMessage());
         }
+        
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+        @Override
+        public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+            Client.closeAllViews();
+            Client.openView(Client.View.HOMEPAGE);
+        }
+    });
     }
 
     public void setDataToTable(List<User> users) {
@@ -57,11 +58,11 @@ public class RankFrm extends javax.swing.JFrame {
             tableModel.addRow(new Object[]{
                     i + 1,
                     user.getNickname(),
-                    new ImageIcon("assets/icon/" + rankSrc.get(i) + ".png")
+                    user.getScore(),
             });
             i++;
         }
-
+        
     }
 
     /**
@@ -78,19 +79,20 @@ public class RankFrm extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         Object[][] rows = {
         };
-        String[] columns = {"Nickname","Điểm","Rank"};
+        String[] columns = {"Số thứ tự","Nickname","Điểm số"};
         DefaultTableModel model = new DefaultTableModel(rows, columns){
             @Override
             public Class<?> getColumnClass(int column){
                 switch(column){
                     case 0: return String.class;
                     case 1: return String.class;
-                    case 2: return ImageIcon.class;
+                    case 2: return String.class;
                     default: return Object.class;
                 }
             }
         };
         rankTextArea = new javax.swing.JTable();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -117,31 +119,46 @@ public class RankFrm extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(frameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(frameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 810, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 363, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(22, 22, 22)
+                .addGap(20, 20, 20)
                 .addComponent(frameLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 375, Short.MAX_VALUE)
                 .addContainerGap())
         );
+
+        jButton1.setText("Quay lại trang chủ");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(321, 321, 321)
+                .addComponent(jButton1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(30, 30, 30)
+                .addComponent(jButton1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -157,9 +174,16 @@ public class RankFrm extends javax.swing.JFrame {
 //        Client.openView(Client.View.COMPETITOR_INFO, listUserStatics.get(rankTextArea.getSelectedRow()));
     }//GEN-LAST:event_rankTextAreaMouseClicked
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        Client.closeAllViews();
+        Client.openView(Client.View.HOMEPAGE);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel frameLabel;
+    private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable rankTextArea;

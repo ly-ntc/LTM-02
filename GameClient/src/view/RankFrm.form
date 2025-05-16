@@ -27,11 +27,21 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Component id="jPanel1" max="32767" attributes="0"/>
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace min="-2" pref="321" max="-2" attributes="0"/>
+              <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
+          </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
+          <Group type="102" alignment="0" attributes="0">
+              <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
+              <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
+          </Group>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -46,10 +56,10 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="frameLabel" alignment="0" max="32767" attributes="0"/>
+              <Component id="frameLabel" alignment="0" pref="810" max="32767" attributes="0"/>
               <Group type="102" alignment="1" attributes="0">
-                  <EmptySpace max="32767" attributes="0"/>
-                  <Component id="jScrollPane1" min="-2" pref="363" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jScrollPane1" pref="0" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -57,10 +67,10 @@
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                   <Component id="frameLabel" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Component id="jScrollPane1" pref="531" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" pref="375" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -108,12 +118,20 @@
               </Events>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable()"/>
-                <AuxValue name="JavaCodeGenerator_CreateCodePre" type="java.lang.String" value="Object[][] rows = {&#xa;};&#xa;String[] columns = {&quot;Nickname&quot;,&quot;&#x110;i&#x1ec3;m&quot;,&quot;Rank&quot;};&#xa;DefaultTableModel model = new DefaultTableModel(rows, columns){&#xa;    @Override&#xa;    public Class&lt;?&gt; getColumnClass(int column){&#xa;        switch(column){&#xa;            case 0: return String.class;&#xa;            case 1: return String.class;&#xa;            case 2: return ImageIcon.class;&#xa;            default: return Object.class;&#xa;        }&#xa;    }&#xa;};"/>
+                <AuxValue name="JavaCodeGenerator_CreateCodePre" type="java.lang.String" value="Object[][] rows = {&#xa;};&#xa;String[] columns = {&quot;S&#x1ed1; th&#x1ee9; t&#x1ef1;&quot;,&quot;Nickname&quot;,&quot;&#x110;i&#x1ec3;m s&#x1ed1;&quot;};&#xa;DefaultTableModel model = new DefaultTableModel(rows, columns){&#xa;    @Override&#xa;    public Class&lt;?&gt; getColumnClass(int column){&#xa;        switch(column){&#xa;            case 0: return String.class;&#xa;            case 1: return String.class;&#xa;            case 2: return String.class;&#xa;            default: return Object.class;&#xa;        }&#xa;    }&#xa;};"/>
               </AuxValues>
             </Component>
           </SubComponents>
         </Container>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JButton" name="jButton1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Quay l&#x1ea1;i trang ch&#x1ee7;"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+      </Events>
+    </Component>
   </SubComponents>
 </Form>

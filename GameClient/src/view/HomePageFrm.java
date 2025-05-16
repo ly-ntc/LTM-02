@@ -32,13 +32,13 @@ public class HomePageFrm extends javax.swing.JFrame {
     private boolean isClicked;
     public HomePageFrm() {
         initComponents();
-        this.setTitle("Caro Game Nhóm 5");
+        this.setTitle("Trò chơi trí nhớ nhóm 2");
         this.setIconImage(new ImageIcon("assets/image/caroicon.png").getImage());
         this.setResizable(false);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         isClicked = false;
-        String [] cols = {"stt", "Ten","isonline","isplaying"};
+        String [] cols = {"Số thứ tự", "Nickname","isonline","isplaying"};
         tableModel = new DefaultTableModel(cols, 0);
         jTable2.setModel(tableModel);
         
@@ -65,7 +65,7 @@ public class HomePageFrm extends javax.swing.JFrame {
                 while (Client.homePageFrm.isDisplayable() && !isClicked) {
                     try {
                         System.out.println("Xem danh sách bạn bè đang chạy!");
-                        
+                        requestUpdate();
                         Thread.sleep(500);
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
@@ -150,7 +150,7 @@ public class HomePageFrm extends javax.swing.JFrame {
 
         frameLabel.setFont(new java.awt.Font("Tekton Pro Ext", 0, 24)); // NOI18N
         frameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        frameLabel.setText("Game Caro ");
+        frameLabel.setText("Trò chơi trí nhớ");
 
         scoreBoardButton.setText("Bảng xếp hạng");
         scoreBoardButton.addActionListener(new java.awt.event.ActionListener() {
@@ -183,7 +183,7 @@ public class HomePageFrm extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 658, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -235,15 +235,15 @@ public class HomePageFrm extends javax.swing.JFrame {
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(messageInput)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(messageInput, javax.swing.GroupLayout.PREFERRED_SIZE, 558, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(sendMessageButton))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(scoreBoardButton, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(scoreBotButton, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(exitGameButton, javax.swing.GroupLayout.DEFAULT_SIZE, 124, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(scoreBotButton, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(63, 63, 63)
+                        .addComponent(exitGameButton, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -271,7 +271,7 @@ public class HomePageFrm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void scoreBoardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_scoreBoardButtonActionPerformed
-//        Client.openView(Client.View.RANK);
+        Client.openView(Client.View.RANK);
     }//GEN-LAST:event_scoreBoardButtonActionPerformed
 
     private void scoreBotButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_scoreBotButtonActionPerformed

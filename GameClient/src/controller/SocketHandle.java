@@ -13,7 +13,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
-import java.util.Vector;
+
 
 /**
  * @author Admin
@@ -36,7 +36,7 @@ public class SocketHandle implements Runnable {
 
     public List<User> getListRank(String[] message) {
         List<User> friend = new ArrayList<>();
-        for (int i = 1; i < message.length; i = i + 9) {
+        for (int i = 1; i < message.length; i = i + 8) {
             friend.add(new User(Integer.parseInt(message[i]),
                     message[i + 1],
                     message[i + 2],
@@ -44,8 +44,8 @@ public class SocketHandle implements Runnable {
                     message[i + 4],
                     Integer.parseInt(message[i + 5]),
                     Integer.parseInt(message[i + 6]),
-                    Integer.parseInt(message[i + 7]),
-                    Integer.parseInt(message[i + 8])));
+                    Integer.parseInt(message[i + 7])
+                    ));
         }
         return friend;
     }
@@ -58,14 +58,14 @@ public class SocketHandle implements Runnable {
                 message[start + 4],
                 Integer.parseInt(message[start + 5]),
                 Integer.parseInt(message[start + 6]),
-                Integer.parseInt(message[start + 7]),
-                Integer.parseInt(message[start + 8]));
+                Integer.parseInt(message[start + 7])
+                );
     }
 
     @Override
     public void run() {
         try {
-            socketOfClient = new Socket("26.143.1.133", 7777);
+            socketOfClient = new Socket("10.21.33.7", 7777);
             System.out.println("Kết nối thành công!");
             outputWriter = new BufferedWriter(new OutputStreamWriter(socketOfClient.getOutputStream()));
             BufferedReader inputReader = new BufferedReader(new InputStreamReader(socketOfClient.getInputStream()));
@@ -91,14 +91,14 @@ public class SocketHandle implements Runnable {
                 //Thông tin tài khoản sai
                 if (messageSplit[0].equals("wrong-user")) {
                     System.out.println("Thông tin sai");
-                    Client.closeView(Client.View.GAME_NOTICE);
+//                    Client.closeView(Client.View.GAME_NOTICE);
                     Client.openView(Client.View.LOGIN, messageSplit[1], messageSplit[2]);
                     Client.loginFrm.showError("Tài khoản hoặc mật khẩu không chính xác");
                 }
                 //Tài khoản đã đăng nhập ở nơi khác
                 if (messageSplit[0].equals("dupplicate-login")) {
                     System.out.println("Đã đăng nhập");
-                    Client.closeView(Client.View.GAME_NOTICE);
+//                    Client.closeView(Client.View.GAME_NOTICE);
                     Client.openView(Client.View.LOGIN, messageSplit[1], messageSplit[2]);
                     Client.loginFrm.showError("Tài khoản đã đăng nhập ở nơi khác");
                 }
@@ -170,7 +170,53 @@ public class SocketHandle implements Runnable {
                     Client.gameClientFrm.updateScore(newScore);
                     
                 }
-
+                if (messageSplit[0].equals("won1")) {
+//                    System.out.println("won1" + messageSplit[0]);
+                    int score = Integer.parseInt(messageSplit[1]);
+                    int competitorScore = Integer.parseInt(messageSplit[2]);
+                    Client.gameClientFrm.CheckWin("thắng");
+                    Client.closeAllViews();
+                    Client.openView(Client.View.RANK);
+                    
+                }
+                if(messageSplit[0].equals("lose1"))
+                {
+//                     System.out.println("won1" + messageSplit[0]);
+                    int score = Integer.parseInt(messageSplit[1]);
+                    int competitorScore = Integer.parseInt(messageSplit[2]);
+                    Client.gameClientFrm.CheckWin("thua");
+                    Client.closeAllViews();
+                    Client.openView(Client.View.RANK);
+                    
+                }
+                if(messageSplit[0].equals("draw1"))
+                {
+                    int score = Integer.parseInt(messageSplit[1]);
+                    int competitorScore = Integer.parseInt(messageSplit[2]);
+                    Client.gameClientFrm.CheckWin("hòa");
+                    Client.closeAllViews();
+                    Client.openView(Client.View.RANK);
+                }
+                if (messageSplit[0].equals("left-room")) {
+                    Client.gameClientFrm.stopTimer();
+                    Client.closeAllViews();
+                    Client.openView(Client.View.GAME_NOTICE, "Đối thủ đã thoát khỏi phòng","Hiển thị bảng xếp hạng");
+                    Thread.sleep(3000);
+                    Client.closeAllViews();
+                    Client.openView(Client.View.RANK);
+                }
+                if(messageSplit[0].equals("finish"))
+                {
+                    Client.gameClientFrm.stopTimer();
+                    Client.closeAllViews();
+//                    Thread.sleep(3000);
+                    Client.openView(Client.View.RANK);
+                }
+                if (messageSplit[0].equals("return-get-rank-charts")) {
+                    if (Client.rankFrm != null) {
+                        Client.rankFrm.setDataToTable(getListRank(messageSplit));
+                    }
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

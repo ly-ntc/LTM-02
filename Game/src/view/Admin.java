@@ -5,7 +5,7 @@
  */
 package view;
 
-import dao.UserDAO;
+import dao.GameDAO;
 
 import javax.swing.JOptionPane;
 
@@ -18,7 +18,7 @@ import controller.ServerThread;
  * @author Admin
  */
 public class Admin extends javax.swing.JFrame implements Runnable {
-    private final UserDAO userDAO;
+    private final GameDAO gameDAO;
 
     /**
      * Creates new form Admin
@@ -28,9 +28,9 @@ public class Admin extends javax.swing.JFrame implements Runnable {
         this.setResizable(false);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(null);
-        threadRoomListView.setEditable(false);
+       
         messageView.setEditable(false);
-        userDAO = new UserDAO();
+        gameDAO = new GameDAO();
     }
 
     /**
@@ -43,10 +43,6 @@ public class Admin extends javax.swing.JFrame implements Runnable {
     private void initComponents() {
 
         jTextField2 = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        threadRoomListView = new javax.swing.JTextArea();
-        viewThreadButton = new javax.swing.JButton();
-        viewRoomListButton = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         boardLabel = new javax.swing.JLabel();
         noticeTextField = new javax.swing.JTextField();
@@ -58,31 +54,12 @@ public class Admin extends javax.swing.JFrame implements Runnable {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        threadRoomListView.setColumns(20);
-        threadRoomListView.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        threadRoomListView.setRows(5);
-        jScrollPane1.setViewportView(threadRoomListView);
-
-        viewThreadButton.setText("Xem danh sách luồng");
-        viewThreadButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                viewThreadButtonActionPerformed(evt);
-            }
-        });
-
-        viewRoomListButton.setText("Xem danh sách phòng");
-        viewRoomListButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                viewRoomListButtonActionPerformed(evt);
-            }
-        });
-
         jPanel1.setBackground(new java.awt.Color(102, 102, 102));
 
         boardLabel.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         boardLabel.setForeground(new java.awt.Color(255, 255, 255));
         boardLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        boardLabel.setText("Admin");
+        boardLabel.setText("Server");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -106,7 +83,7 @@ public class Admin extends javax.swing.JFrame implements Runnable {
         });
 
         publishMessageButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        publishMessageButton.setText("Phát thông báo");
+        publishMessageButton.setText("Gửi tin nhắn toàn server");
         publishMessageButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 publishMessageButtonActionPerformed(evt);
@@ -123,86 +100,30 @@ public class Admin extends javax.swing.JFrame implements Runnable {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addGap(62, 62, 62)
-                .addComponent(viewThreadButton, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(114, 114, 114)
-                .addComponent(viewRoomListButton, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
-                .addGap(61, 61, 61))
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(31, 31, 31)
-                            .addComponent(jScrollPane2))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                            .addGap(30, 30, 30)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 582, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(30, 30, 30)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 581, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(30, 30, 30)
-                        .addComponent(noticeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 441, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(noticeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 377, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(publishMessageButton)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(59, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(47, 47, 47)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 327, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(viewRoomListButton)
-                    .addComponent(viewThreadButton, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(noticeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(publishMessageButton))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(publishMessageButton)
+                    .addComponent(noticeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(69, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void viewThreadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewThreadButtonActionPerformed
-        StringBuilder res = new StringBuilder();
-        String room;
-        int i = 1;
-        for (ServerThread serverThread : Server.serverThreadBus.getListServerThreads()) {
-            if (serverThread.getRoom() == null)
-                room = null;
-            else room = "" + serverThread.getRoom().getId();
-            if (serverThread.getUser() != null) {
-                res.append(i).append(". Client-number: ").append(serverThread.getClientNumber()).append(", User-ID: ").append(serverThread.getUser().getID()).append(", Room: ").append(room).append("\n");
-            } else {
-                res.append(i).append(". Client-number: ").append(serverThread.getClientNumber()).append(", User-ID: null, Room: ").append(room).append("\n");
-            }
-            i++;
-        }
-        threadRoomListView.setText(res.toString());
-    }//GEN-LAST:event_viewThreadButtonActionPerformed
-
-    private void viewRoomListButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewRoomListButtonActionPerformed
-        StringBuilder res = new StringBuilder();
-        int i = 1;
-        for (ServerThread serverThread : Server.serverThreadBus.getListServerThreads()) {
-            Room room1 = serverThread.getRoom();
-            String listUser = "List user ID: ";
-            if (room1 != null) {
-                if (room1.getNumberOfUser() == 1) {
-                    listUser += room1.getUser1().getUser().getID();
-                } else {
-                    listUser += room1.getUser1().getUser().getID() + ", " + room1.getUser2().getUser().getID();
-                }
-                res.append(i).append(". Room_ID: ").append(room1.getId()).append(", Number of player: ").append(room1.getNumberOfUser()).append(", ").append(listUser).append("\n");
-                i++;
-            }
-
-        }
-        threadRoomListView.setText(res.toString());
-    }//GEN-LAST:event_viewRoomListButtonActionPerformed
 
     private void publishMessageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_publishMessageButtonActionPerformed
         sendMessage();
@@ -229,7 +150,7 @@ public class Admin extends javax.swing.JFrame implements Runnable {
         String tmp = messageView.getText();
         tmp = tmp + message + "\n";
         messageView.setText(tmp);
-        messageView.setCaretPosition(threadRoomListView.getDocument().getLength());
+       
     }
 
 //    private boolean isInvalidForm() {
@@ -247,15 +168,11 @@ public class Admin extends javax.swing.JFrame implements Runnable {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel boardLabel;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField jTextField2;
     public static javax.swing.JTextArea messageView;
     private javax.swing.JTextField noticeTextField;
     private javax.swing.JButton publishMessageButton;
-    private javax.swing.JTextArea threadRoomListView;
-    private javax.swing.JButton viewRoomListButton;
-    private javax.swing.JButton viewThreadButton;
     // End of variables declaration//GEN-END:variables
 
     @Override

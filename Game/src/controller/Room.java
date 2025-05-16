@@ -5,7 +5,7 @@
  */
 package controller;
 
-import dao.UserDAO;
+import dao.GameDAO;
 
 import java.io.IOException;
 
@@ -16,14 +16,12 @@ public class Room {
     private final int id;
     private final ServerThread user1;
     private ServerThread user2;
-    private String password;
-    private final UserDAO userDAO;
+    private final GameDAO gameDAO;
 
     public Room(ServerThread user1) {
         System.out.println("Tạo phòng thành công, ID là: " + Server.ROOM_ID);
-        this.password = " ";
         this.id = Server.ROOM_ID++;
-        userDAO = new UserDAO();
+        gameDAO = new GameDAO();
         this.user1 = user1;
         this.user2 = null;
     }
@@ -42,18 +40,6 @@ public class Room {
 
     public ServerThread getUser1() {
         return user1;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public int getNumberOfUser() {
-        return user2 == null ? 1 : 2;
     }
 
     public void boardCast(String message) {
@@ -78,34 +64,17 @@ public class Room {
     }
 
     public void setUsersToPlaying() {
-        userDAO.updateToPlaying(user1.getUser().getID());
+        gameDAO.updateToPlaying(user1.getUser().getID());
         if (user2 != null) {
-            userDAO.updateToPlaying(user2.getUser().getID());
+            gameDAO.updateToPlaying(user2.getUser().getID());
         }
     }
 
     public void setUsersToNotPlaying() {
-        userDAO.updateToNotPlaying(user1.getUser().getID());
+        gameDAO.updateToNotPlaying(user1.getUser().getID());
         if (user2 != null) {
-            userDAO.updateToNotPlaying(user2.getUser().getID());
+            gameDAO.updateToNotPlaying(user2.getUser().getID());
         }
     }
-
-
-    public void increaseNumberOfGame() {
-        userDAO.addGame(user1.getUser().getID());
-        userDAO.addGame(user2.getUser().getID());
-    }
-
-    public void increaseNumberOfDraw() {
-        userDAO.addDrawGame(user1.getUser().getID());
-        userDAO.addDrawGame(user2.getUser().getID());
-    }
-
-    public void decreaseNumberOfGame() {
-        userDAO.decreaseGame(user1.getUser().getID());
-        userDAO.decreaseGame(user2.getUser().getID());
-    }
-
 
 }
