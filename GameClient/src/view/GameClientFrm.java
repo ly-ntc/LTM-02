@@ -34,6 +34,10 @@ import javax.sound.sampled.TargetDataLine;
 import javax.swing.JOptionPane;
 
 import model.User;
+import java.sql.Timestamp;
+import java.time.Instant;
+
+// Các biến hiện có của bạn
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -67,6 +71,9 @@ public class GameClientFrm extends javax.swing.JFrame {
     private int playerScore = 0;
     private int competitorScore = 0;
     
+    private Timestamp startTime;
+    private Timestamp endTime;
+    
     public GameClientFrm(User competitor, int room_ID, int isStart, String competitorIP, List<Integer> shuffledMatrix) {
         initComponents();
         numberOfMatch = isStart;
@@ -76,8 +83,11 @@ public class GameClientFrm extends javax.swing.JFrame {
         // Khởi tạo tỉ số
         userWin = 0;
         competitorWin = 0;
-
-        this.setTitle("Game Memory");
+        
+        startTime = Timestamp.from(Instant.now());
+        System.out.println("Thời gian bắt đầu (Timestamp): " + startTime);
+    
+        this.setTitle("Trò chơi trí nhớ nhóm 2");
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setResizable(false);
         this.setLocationRelativeTo(null);
@@ -94,14 +104,14 @@ public class GameClientFrm extends javax.swing.JFrame {
         roomNameLabel.setAlignmentX(JLabel.CENTER);
         
         playerNicknameValue.setText(Client.user.getNickname());
-        playerNumberOfGameValue.setText(Integer.toString(Client.user.getNumberOfGame()));
-        playerNumberOfWinValue.setText(Integer.toString(Client.user.getNumberOfWin()));
+        playerNumberOfGameValue.setText(Integer.toString(Client.user.getGame()));
+        playerNumberOfWinValue.setText(Integer.toString(Client.user.getWin()));
       
         roomNameLabel.setText("Phòng: " + room_ID);
        
         competitorNicknameValue.setText(competitor.getNickname());
-        competotorNumberOfGameValue.setText(Integer.toString(competitor.getNumberOfGame()));
-        competitorNumberOfWinValue.setText(Integer.toString(competitor.getNumberOfWin()));
+        competotorNumberOfGameValue.setText(Integer.toString(competitor.getGame()));
+        competitorNumberOfWinValue.setText(Integer.toString(competitor.getWin()));
         scoreLabel.setText("Tỉ số: " + playerScore + " - " + competitorScore);
 //        drawRequestButton.setVisible(false);
      
@@ -118,6 +128,17 @@ public class GameClientFrm extends javax.swing.JFrame {
                 // Kiểm tra nếu hết thời gian
                 if (timeLeft < 0) {
                     timer.stop(); // Dừng bộ đếm thời gian
+                    //cho thằng có điểm cao hơn gửi thông điệp, nếu hai người điểm bằng nhau thì lấy ng có id bé hoen để gửi
+                    if(playerScore > competitorScore)
+                    {
+                        notifyServerGameTimeOut();  // Gửi thông báo về việc hết thời gian
+                        return;
+                    }else if( playerScore == competitorScore && Client.user.getID() > competitor.getID()){
+                        notifyServerGameTimeOut();  // Gửi thông báo về việc hết thời gian
+                        return;
+                    }
+                    
+                    //lưu điểm , trở lại trang xếp hạng
                     
                 }
             }
@@ -130,7 +151,7 @@ public class GameClientFrm extends javax.swing.JFrame {
         for (int i = 0; i < size * size; i++) {
             buttons[i] = new JButton();
             buttons[i].setActionCommand(String.valueOf(i));  // Đặt chỉ số làm action command
-            buttons[i].setIcon(new ImageIcon("src/assets/avatar/0.jpg"));  // Ảnh mặc định
+            buttons[i].setIcon(new ImageIcon("src/assets/images/default.jpg"));  // Ảnh mặc định
 
             // Sự kiện khi bấm nút
             buttons[i].addActionListener(new ActionListener() {
@@ -162,21 +183,26 @@ public class GameClientFrm extends javax.swing.JFrame {
                             // Khóa hai nút này lại (không cho lật nữa)
                             firstButton.setEnabled(false);
                             secondButton.setEnabled(false);
-
+                            
+                            
                             // Kiểm tra nếu người chơi đã lật hết các cặp ảnh
-                            if (playerScore == 8) {
+                            if (playerScore == 8 ) {
                                 timer.stop();  // Dừng đồng hồ đếm ngược
-                                JOptionPane.showMessageDialog(null, "Bạn đã hoàn thành trò chơi!");
+//                                JOptionPane.showMessageDialog(null, "Bạn đã hoàn thành trò chơi!");
                                 notifyServerGameFinished();  // Gửi thông báo đến server rằng người chơi đã hoàn thành
                                 
                             }
+                            // khi hết thời gian mà hai người vẫn chưa xong
+                            
+                            
+                            
                         } else {
                             // Nếu hai ảnh không giống nhau, úp lại ảnh sau 1 giây
                             Timer flipBackTimer = new Timer(1000, new ActionListener() {
                                 @Override
                                 public void actionPerformed(ActionEvent e) {
-                                    firstButton.setIcon(new ImageIcon("src/assets/avatar/0.jpg"));
-                                    secondButton.setIcon(new ImageIcon("src/assets/avatar/0.jpg"));
+                                    firstButton.setIcon(new ImageIcon("src/assets/images/default.jpg"));
+                                    secondButton.setIcon(new ImageIcon("src/assets/images/default.jpg"));
                                 }
                             });
                             flipBackTimer.setRepeats(false);  // Đặt để chỉ chạy một lần
@@ -208,15 +234,26 @@ public class GameClientFrm extends javax.swing.JFrame {
 
     private void notifyServerGameFinished() {
         try {
-            Client.socketHandle.write("player-finished," + playerScore);  
+            endTime = Timestamp.from(Instant.now());
+            Client.socketHandle.write("win1," + playerScore +","+ competitorScore+","+startTime.toString()+","+endTime.toString());  
         } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+    private void notifyServerGameTimeOut(){
+        try{
+            endTime = Timestamp.from(Instant.now());
+            Client.socketHandle.write("timeout," + playerScore+ ","+competitorScore+","+startTime.toString()+","+endTime.toString());
+        }catch(IOException ex)
+        {
             ex.printStackTrace();
         }
     }
     public void exitGame() {
         try {
             timer.stop();
-            Client.socketHandle.write("left-room,");
+            endTime = Timestamp.from(Instant.now());
+            Client.socketHandle.write("left-room,"+playerScore+","+competitorScore+","+startTime.toString()+","+endTime.toString());
             Client.closeAllViews();
             Client.openView(Client.View.HOMEPAGE);
         } catch (IOException ex) {
@@ -226,7 +263,7 @@ public class GameClientFrm extends javax.swing.JFrame {
         Client.openView(Client.View.HOMEPAGE);
     }
     public void updateScore(int newScore) {
-        competitorScore = newScore; // Cập nhật điểm số của đối thủ
+        competitorScore = newScore; // Cập nhật điểm số của đối thủ 
         scoreLabel.setText("Tỉ số: " + playerScore + " - " + competitorScore); // Cập nhật UI
     }
     private void showImage(JButton button, int imageIndex) {
@@ -234,17 +271,33 @@ public class GameClientFrm extends javax.swing.JFrame {
         button.setIcon(new ImageIcon(imagePath));
     }
     private void notifyServerScoreUpdate() {
-    try {
-        // Gửi thông điệp lên server với điểm số của người chơi
-        Client.socketHandle.write("score-update," + playerScore);
-    } catch (IOException ex) {
-        ex.printStackTrace();
+        try {
+            // Gửi thông điệp lên server với điểm số của người chơi
+            Client.socketHandle.write("score-update," + playerScore);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        //xử lý kết thúc trò chơi
+    
+    
     }
-    
-    
-}
+      public void stopTimer() {
+        timer.stop();
+    }
 
-    
+    public void CheckWin(String s){
+         JOptionPane.showMessageDialog(rootPane, "Kết quả: " + s +"\n"+ "Điểm của bạn là" + playerScore);
+         try {
+            timer.stop();
+            Client.socketHandle.write("finish,");
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage());
+        }
+    }
+
+    public void stopAllThread() {
+        timer.stop();
+    }
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -284,9 +337,6 @@ public class GameClientFrm extends javax.swing.JFrame {
         drawRequestButton = new javax.swing.JButton();
         countDownLabel = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
-        mainMenu = new javax.swing.JMenu();
-        newGameMenuItem = new javax.swing.JMenuItem();
-        exitMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         helpMenuItem = new javax.swing.JMenuItem();
 
@@ -409,7 +459,7 @@ public class GameClientFrm extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(competitorLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(173, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -462,29 +512,6 @@ public class GameClientFrm extends javax.swing.JFrame {
 
         countDownLabel.setText("Thoi gian: ");
 
-        mainMenu.setText("Menu");
-        mainMenu.setToolTipText("");
-
-        newGameMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        newGameMenuItem.setText("Game mới");
-        newGameMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                newGameMenuItemActionPerformed(evt);
-            }
-        });
-        mainMenu.add(newGameMenuItem);
-
-        exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_DOWN_MASK));
-        exitMenuItem.setText("Thoát");
-        exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exitMenuItemActionPerformed(evt);
-            }
-        });
-        mainMenu.add(exitMenuItem);
-
-        jMenuBar1.add(mainMenu);
-
         helpMenu.setText("Help");
 
         helpMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F2, java.awt.event.InputEvent.CTRL_DOWN_MASK));
@@ -512,7 +539,6 @@ public class GameClientFrm extends javax.swing.JFrame {
                             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(layout.createSequentialGroup()
                                         .addContainerGap()
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -543,18 +569,23 @@ public class GameClientFrm extends javax.swing.JFrame {
                                             .addComponent(playerNumberOfGameValue)))
                                     .addGroup(layout.createSequentialGroup()
                                         .addGap(146, 146, 146)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(drawRequestButton, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addComponent(scoreLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                                .addGap(0, 82, Short.MAX_VALUE))
-                            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(0, 160, Short.MAX_VALUE))
+                            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(countDownLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(54, 54, 54))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(51, 51, 51)
-                        .addComponent(countDownLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(124, 124, 124)
+                        .addComponent(drawRequestButton, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(scoreLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(116, 116, 116)))
                 .addComponent(gamePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -591,16 +622,14 @@ public class GameClientFrm extends javax.swing.JFrame {
                 .addGap(19, 19, 19)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(16, 16, 16)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel7)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(11, 11, 11)
-                        .addComponent(scoreLabel)))
-                .addGap(7, 7, 7)
-                .addComponent(countDownLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(drawRequestButton, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
+                .addComponent(jLabel7)
+                .addGap(11, 11, 11)
+                .addComponent(scoreLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(countDownLabel)
+                .addGap(18, 18, 18)
+                .addComponent(drawRequestButton, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
+                .addGap(1, 1, 1)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addComponent(gamePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -614,29 +643,21 @@ public class GameClientFrm extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void newGameMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newGameMenuItemActionPerformed
-        JOptionPane.showMessageDialog(rootPane, "Thông báo", "Tính năng đang được phát triển", JOptionPane.INFORMATION_MESSAGE);
-    }//GEN-LAST:event_newGameMenuItemActionPerformed
-
-    private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
-        exitGame();
-    }//GEN-LAST:event_exitMenuItemActionPerformed
-
     private void drawRequestButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_drawRequestButtonActionPerformed
+
         exitGame();
         
     }//GEN-LAST:event_drawRequestButtonActionPerformed
 
     private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpMenuItemActionPerformed
         // TODO add your handling code here:
-        JOptionPane.showMessageDialog(rootPane, "Luật chơi: luật quốc tế 5 nước chặn 2 đầu\n"
-                + "Hai người chơi luân phiên nhau chơi trước\n"
-                + "Người chơi trước đánh X, người chơi sau đánh O\n"
-                + "Bạn có 20 giây cho mỗi lượt đánh, quá 20 giây bạn sẽ thua\n"
-                + "Khi cầu hòa, nếu đối thủ đồng ý thì ván hiện tại được hủy kết quả\n"
-                + "Với mỗi ván chơi bạn có thêm 1 điểm, nếu hòa bạn được thêm 5 điểm,\n"
-                + "nếu thắng bạn được thêm 10 điểm\n"
-                + "Chúc bạn chơi game vui vẻ");
+        JOptionPane.showMessageDialog(rootPane, "Luật chơi: o	Sever sẽ xáo trộn các hình ảnh trong ma trận (4x4), có 16 ảnh và có 8 cặp ảnh giống nhau.\n" +
+"Mỗi màn hình người chơi sẽ hiện lên ma trận ảnh giống nhau, hai người sẽ cùng bắt đầu chơi một lúc.\n" +
+"Trò chơi sẽ chỉ diễn ra trong 90 giây. Người chơi được quyền chọn lật hai ảnh mỗi lần, khi hai ảnh giống nhau thì chúng sẽ ngửa còn hai ảnh khác nhau thì lại úp lại. \n" +
+"Trò chơi kết thúc khi có một người chơi hoàn thành trò chơi tức là lật hết các cặp ảnh. Người hoàn thành trước sẽ chiến thắng. Người chưa hoàn thành kia sẽ cũng dừng chơi.\n" +
+"Hoặc khi hết thời gian mà không ai hoàn thành hết các ảnh thì người nào nhiều điểm hơn thì người đó thắng.\n" +
+"Điểm được tính như sau: mỗi người chơi lật đúng một cặp sẽ được một điểm.\n" +
+"Nếu hai người chơi hoàn thành cùng một lúc thì sẽ hòa nhau.");
     }//GEN-LAST:event_helpMenuItemActionPerformed
 
     public void showMessage(String message) {
@@ -659,7 +680,6 @@ public class GameClientFrm extends javax.swing.JFrame {
     private javax.swing.JLabel competotorNumberOfGameValue;
     private javax.swing.JLabel countDownLabel;
     private javax.swing.JButton drawRequestButton;
-    private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JPanel gamePanel;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuItem helpMenuItem;
@@ -673,8 +693,6 @@ public class GameClientFrm extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JMenu mainMenu;
-    private javax.swing.JMenuItem newGameMenuItem;
     private javax.swing.JLabel playerLabel;
     private javax.swing.JLabel playerNicknameLabel;
     private javax.swing.JLabel playerNicknameValue;

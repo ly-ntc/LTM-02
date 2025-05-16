@@ -45,7 +45,7 @@ public class Client {
                     registerFrm = new RegisterFrm();
                     registerFrm.setVisible(true);
                     break;
-                 case HOMEPAGE:
+                case HOMEPAGE:
                     homePageFrm = new HomePageFrm();
                     homePageFrm.setVisible(true);
                     break;
@@ -77,8 +77,7 @@ public class Client {
             }
         }
     }
-
-    public static void closeView(View viewName) {
+         public static void closeView(View viewName) {
         if (viewName != null) {
             switch (viewName) {
                 case LOGIN:
@@ -93,6 +92,14 @@ public class Client {
                 case GAME_NOTICE:
                     gameNoticeFrm.dispose();
                     break;
+                case GAME_CLIENT:
+                    gameClientFrm.stopAllThread();
+                    gameClientFrm.dispose();
+                    break;
+                case RANK:
+                    rankFrm.dispose();
+                    break;
+                
             }
 
         }
@@ -103,6 +110,12 @@ public class Client {
         if (registerFrm != null) registerFrm.dispose();
         if (homePageFrm != null) homePageFrm.dispose();
         if (gameNoticeFrm != null) gameNoticeFrm.dispose();
+        if (gameClientFrm != null) {
+            gameClientFrm.stopAllThread();
+            gameClientFrm.dispose();
+        }
+        if (rankFrm != null) rankFrm.dispose();
+       
     }
 
     public static void main(String[] args) {
@@ -123,6 +136,7 @@ public class Client {
         HOMEPAGE,
         GAME_NOTICE,
         RANK,
-        GAME_CLIENT
+        GAME_CLIENT,
+        
     }
 }

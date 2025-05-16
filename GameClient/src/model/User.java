@@ -14,48 +14,37 @@ public class User {
     private String password;
     private String nickname;
     private String avatar;
-    private int numberOfGame;
-    private int numberOfWin;
-    private int numberOfDraw;
+    private int game;
+    private int win;
+    private int score;
     private boolean online;
     private boolean playing;
-    private int rank;
-
-    public User(int ID, String username, String password, String nickname, String avatar, int numberOfGame, int numberOfWin, int numberOfDraw, int rank) {
+   
+    public User(int ID, String username, String password, String nickname, String avatar, int game, int win, int score) {
         this.ID = ID;
         this.username = username;
         this.password = password;
         this.nickname = nickname;
         this.avatar = avatar;
-        this.numberOfGame = numberOfGame;
-        this.numberOfWin = numberOfWin;
-        this.numberOfDraw = numberOfDraw;
-        this.rank = rank;
+        this.game = game;
+        this.win = win;
+        this.score = score;
     }
 
-    public User(int ID, String username, String password, String nickname, String avatar, int numberOfGame, int numberOfWin, int numberOfDraw, boolean online, boolean playing) {
+    public User(int ID, String username, String password, String nickname, String avatar, int game, int win, int score, boolean online, boolean playing) {
         this.ID = ID;
         this.username = username;
         this.password = password;
         this.nickname = nickname;
         this.avatar = avatar;
-        this.numberOfGame = numberOfGame;
-        this.numberOfWin = numberOfWin;
-        this.numberOfDraw = numberOfDraw;
+        this.game = game;
+        this.win = win;
+        this.score = score;
         this.online = online;
         this.playing = playing;
     }
 
-    public User(int ID, String username, String password, String nickname, String avatar, int numberOfGame, int numberOfWin, int numberOfDraw) {
-        this.ID = ID;
-        this.username = username;
-        this.password = password;
-        this.nickname = nickname;
-        this.avatar = avatar;
-        this.numberOfGame = numberOfGame;
-        this.numberOfWin = numberOfWin;
-        this.numberOfDraw = numberOfDraw;
-    }
+    
 
 
     public User(int ID, String nickname) {
@@ -83,20 +72,38 @@ public class User {
         this.avatar = avatar;
     }
 
-    public User(int ID, String nickname, int numberOfGame, int numberOfDraw) {
+    public User(int ID, String nickname, int game, int score) {
         this.ID = ID;
         this.nickname = nickname;
-        this.numberOfGame = numberOfGame;
-        this.numberOfDraw = numberOfDraw;
+        this.game = game;
+        this.score = score;
     }
 
-    public int getRank() {
-        return rank;
+    public int getGame() {
+        return game;
     }
 
-    public void setRank(int rank) {
-        this.rank = rank;
+    public void setGame(int game) {
+        this.game = game;
     }
+
+    public int getWin() {
+        return win;
+    }
+
+    public void setWin(int win) {
+        this.win = win;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+   
 
     public int getID() {
         return ID;
@@ -134,21 +141,7 @@ public class User {
         this.avatar = avatar;
     }
 
-    public int getNumberOfGame() {
-        return numberOfGame;
-    }
-
-    public void setNumberOfGame(int numberOfGame) {
-        this.numberOfGame = numberOfGame;
-    }
-
-    public int getNumberOfWin() {
-        return numberOfWin;
-    }
-
-    public void setNumberOfWin(int numberOfWin) {
-        this.numberOfWin = numberOfWin;
-    }
+    
 
     public boolean isOnline() {
         return online;
@@ -166,11 +159,5 @@ public class User {
         this.playing = isPlaying;
     }
 
-    public int getNumberOfDraw() {
-        return numberOfDraw;
-    }
-
-    public void setNumberOfDraw(int numberOfDraw) {
-        this.numberOfDraw = numberOfDraw;
-    }
+   
 }
